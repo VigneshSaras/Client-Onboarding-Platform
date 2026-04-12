@@ -294,27 +294,8 @@ def _find_verification_email(page, target_email: str, timeout_seconds: int, outl
     print("[Step 2] Looking for verification link in email body...")
     page.wait_for_timeout(2000)
 
-    confirm_selectors = [
-        'a:has-text("Confirm Email")',
-        'a:has-text("Verify Email")',
-        'a:has-text("Verify")',
-        'a:has-text("Confirm")',
-        'a[href*="verify"]',
-        'a[href*="code="]',
-        'button:has-text("Confirm Email")',
-        'button:has-text("Verify")',
-    ]
-
-    for selector in confirm_selectors:
-        try:
-            link = page.locator(selector).first
-            if link.is_visible(timeout=2000):
-                href = link.get_attribute("href")
-                if href:
-                    print(f"[Step 2] Found confirm link: {href[:100]}...")
-                    return href
-        except Exception:
-            continue
+    # Playwright's synchronous layout selectors cause massive memory spikes in heavy SPAs.
+    # We bypass this completely using the native JS Engine.
 
     print("[Step 2] Extracting verification link natively via Javascript Engine...")
     try:
