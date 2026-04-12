@@ -93,20 +93,6 @@ def verify_and_set_password(
 
         page = context.new_page()
 
-        # ======================================================================
-        # AGGRESSIVE RENDER 512MB RAM OPTIMIZATION: THE NETWORK BLACKHOLE
-        # This completely strips Microsoft Outlook down to pure raw 1990s HTML 
-        # by blocking Graphics, Tracking Scripts, and Custom Fonts.
-        # (We restored CSS so the Search Box doesn't vanish!)
-        # ======================================================================
-        def intercept_route(route):
-            if route.request.resource_type in ["image", "font", "media"]:
-                route.abort()
-            else:
-                route.continue_()
-                
-        page.route("**/*", intercept_route)
-
         try:
             verification_url = _find_verification_email(page, target_email, timeout_seconds, outlook_email, outlook_pw, use_session)
 
