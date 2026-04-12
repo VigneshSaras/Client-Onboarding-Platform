@@ -302,39 +302,27 @@ def _find_verification_email(page, target_email: str, timeout_seconds: int, outl
         except Exception:
             continue
 
-    print("[Step 2] Searching for verification link in page content...")
+    print("[Step 2] Extracting verification link natively via Javascript Engine...")
     try:
-        email_body = page.locator('[role="document"], .ms-fontColor-neutralPrimary, [aria-label*="Message body"]').first
-        emails = email_body.locator('a').all()
-        for link in emails:
-            try:
-                href = link.get_attribute("href")
-                if href and ("accounts" in href or "verify" in href.lower() or "code=" in href):
-                    print(f"[Step 2] Found verification link: {href[:100]}...")
-                    return href
-            except Exception:
-                pass
+        # We execute this entirely inside Chromium to bypass Playwright's massive DOM memory transfer Serialization
+        js_extractor = """
+        () => {
+            const links = document.querySelectorAll('a');
+            for (let a of links) {
+                if (a.href && (a.href.includes('accounts.sarasanalytics.com') || a.href.includes('verifyEmail'))) {
+                    if (a.href.includes('protection.sophos.com') && a.href.includes('sarasanalytics.com')) return a.href;
+                    if (!a.href.includes('protection.sophos.com') && a.href.includes('mode=verifyEmail')) return a.href;
+                }
+            }
+            return null;
+        }
+        """
+        extracted_url = page.evaluate(js_extractor)
+        if extracted_url:
+            print(f"[Step 2] Javascript Engine successfully found URL: {extracted_url[:100]}...")
+            return extracted_url
     except Exception as e:
-        print(f"[Step 2] Error searching links: {e}")
-
-    print("[Step 2] Extracting link from page source...")
-    try:
-        page_source = page.content()
-        url_patterns = [
-            r'https://[\w-]+accounts\.sarasanalytics\.com[^"\'<>\s]+mode=verifyEmail[^"\'<>\s]*',
-            r'https://[\w-]+accounts\.sarasanalytics\.com[^"\'<>\s]+(verify|code)[^"\'<>\s]*',
-            r'https://[\w-]+accounts\.sarasanalytics\.com/[^"\'<>\s]+',
-        ]
-        for pattern in url_patterns:
-            matches = re.findall(pattern, page_source)
-            if matches:
-                verification_url = max(matches, key=len)
-                verification_url = verification_url.replace("&amp;", "&").split('"')[0].split("'")[0]
-                if "accounts" in verification_url:
-                    print(f"[Step 2] Found verification URL via regex: {verification_url[:100]}...")
-                    return verification_url
-    except Exception as e:
-        print(f"[Step 2] Regex extraction error: {e}")
+        print(f"[Step 2] JS Engine extraction error: {e}")
 
     print("[Step 2] Could not find verification link in email")
     return None
