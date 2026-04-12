@@ -50,12 +50,17 @@ def verify_and_set_password(
     }
 
     with sync_playwright() as p:
-        # STEALTH MODULE: Erase Headless Bot Fingerprints to bypass Google reCAPTCHA
+        # STEALTH MODULE: Erase Headless Bot Fingerprints & Optimize for Linux Containers (Prevent OOM memory crashes)
         stealth_args = [
             "--start-maximized",
             "--disable-blink-features=AutomationControlled",
             "--disable-infobars",
-            "--no-sandbox"
+            "--no-sandbox",
+            "--disable-dev-shm-usage",     # CRITICAL for Render: prevents 64MB docker memory crash
+            "--disable-gpu",               # Disables graphics compute
+            "--single-process",            # Forces chromium to use less RAM
+            "--no-zygote",
+            "--blink-settings=imagesEnabled=false" # Blocks image downloads to save massive RAM
         ]
         
         browser = p.chromium.launch(
