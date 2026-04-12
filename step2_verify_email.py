@@ -96,10 +96,11 @@ def verify_and_set_password(
         # ======================================================================
         # AGGRESSIVE RENDER 512MB RAM OPTIMIZATION: THE NETWORK BLACKHOLE
         # This completely strips Microsoft Outlook down to pure raw 1990s HTML 
-        # by blocking all CSS, Graphics, Tracking Scripts, and Custom Fonts.
+        # by blocking Graphics, Tracking Scripts, and Custom Fonts.
+        # (We restored CSS so the Search Box doesn't vanish!)
         # ======================================================================
         def intercept_route(route):
-            if route.request.resource_type in ["stylesheet", "image", "font", "media"]:
+            if route.request.resource_type in ["image", "font", "media"]:
                 route.abort()
             else:
                 route.continue_()
