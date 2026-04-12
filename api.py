@@ -1,5 +1,9 @@
 import os
 import sys
+
+# RENDER CLOUD HIJACK: Forcibly link the cloud Playwright engine
+if sys.platform != "win32":
+    os.environ["PLAYWRIGHT_BROWSERS_PATH"] = "/opt/render/project/src/browsers"
 import uuid
 import queue
 import threading
