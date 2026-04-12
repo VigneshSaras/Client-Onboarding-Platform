@@ -1,0 +1,208 @@
+# Uzzle Games (5427) — documentation overlay for EDM package model (tests live in edm_data_transformation).
+version: 2
+
+models:
+  - name: CustomerMaster
+    description: |
+      **Client:** Uzzle Games (5427) — `insightsprod.uzzlegames_5427_prod_presentation.CustomerMaster`
+
+      **Grain:** One row per **customer_key** (surrogate customer) sourced from `dim_customer` with acquisition and
+      subscription rollups from `fact_order_lines` / `dim_orders`.
+
+      Presentation **customer 360** for enabled commerce connectors (`AMAZONSELLER`, `SHOPIFYV2`, `TIKTOKSHOP`): identity,
+      consent, geography, first-order **acquisition** attributes, **subscription** first-order attributes, and lifetime
+      counters (**total_orders**, **total_gross_sales**, subscription order counts and revenue). Entity-style table:
+      profiles can change over time; incremental **merge** on `_last_updated` with optional snapshot clone for tests.
+
+      **Use for:** Segmentation, CLV inputs, acquisition-channel analysis, subscription vs OTP journeys, joining to
+      `account_overview_sales` on `customer_key` / `customer_id`, and marketing consent flags.
+
+      **Do not use for:** Order-line revenue detail (use sales facts); anonymous traffic; ad creative detail (`AdvertisingMaster`);
+      channel contribution margin (use `contribution_margin` for CM dashboards).
+
+      **Refresh:** Default **90-day** partition window on **create_date** (`CustomerMaster_lookback`); merge strategy.
+
+    columns:
+      - name: customer_key
+        data_type: string
+        description: Unique identifier for each customer across all platforms and channels.
+
+      - name: customer_id
+        data_type: string
+        description: The original customer identifier from the source platform (email for Amazon, customer ID for Shopify).
+
+      - name: email
+        data_type: string
+        description: The customer's email address used for communication and identification.
+
+      - name: create_date
+        data_type: datetime
+        description: The date and time when the customer first created their account or made their first purchase.
+
+      - name: full_name
+        data_type: string
+        description: The customer's complete name combining first and last names.
+
+      - name: first_name
+        data_type: string
+        description: The customer's first name.
+
+      - name: last_name
+        data_type: string
+        description: The customer's last name or surname.
+
+      - name: accepts_marketing
+        data_type: boolean
+        description: Whether the customer has agreed to receive marketing communications like promotional emails and SMS.
+
+      - name: email_marketing_consent_state
+        data_type: string
+        description: The customer's current consent status for receiving marketing emails.
+
+      - name: sms_marketing_consent_state
+        data_type: string
+        description: The customer's current consent status for receiving marketing text messages.
+
+      - name: status
+        data_type: string
+        description: The current status of the customer account (active, disabled, invited, etc.).
+
+      - name: tags
+        data_type: string
+        description: Custom labels or tags assigned to the customer for segmentation and organization purposes.
+
+      - name: note
+        data_type: string
+        description: Internal notes or comments about the customer for business reference.
+
+      - name: city
+        data_type: string
+        description: The city where the customer is located based on their address information.
+
+      - name: state
+        data_type: string
+        description: The state or province where the customer is located.
+
+      - name: country
+        data_type: string
+        description: The country where the customer is located.
+
+      - name: phone
+        data_type: string
+        description: The customer's phone number for contact purposes.
+
+      - name: acquisition_channel
+        data_type: string
+        description: The platform or channel where the customer was first acquired (Amazon, Shopify, etc.).
+
+      - name: last_order_date
+        data_type: date
+        description: The date when the customer placed their most recent order.
+
+      - name: acquisition_date
+        data_type: date
+        description: The date when the customer made their very first purchase and became a customer.
+
+      - name: acquisition_order
+        data_type: string
+        description: The order ID of the customer's first purchase that acquired them as a customer.
+
+      - name: acquisition_discount_codes
+        data_type: string
+        description: Any discount codes or coupons the customer used in their first purchase.
+
+      - name: acquisition_product_category
+        data_type: string
+        description: The main product category of items purchased in the customer's first order.
+
+      - name: acquisition_product_sub_category
+        data_type: string
+        description: The specific product subcategory of items purchased in the customer's first order.
+
+      - name: acquisition_product_name
+        data_type: string
+        description: The name of the main product purchased in the customer's first order.
+
+      - name: acquisition_product_basket
+        data_type: string
+        description: A list of all products purchased together in the customer's first order.
+
+      - name: acquisition_category_basket
+        data_type: string
+        description: A list of all product categories purchased together in the customer's first order.
+
+      - name: acquisition_order_channel
+        data_type: string
+        description: The specific sales channel used for the customer's first purchase (website, mobile app, marketplace id, etc.).
+
+      - name: acquisition_order_type
+        data_type: boolean
+        description: Whether the customer's first order was a one-time purchase or subscription order.
+
+      - name: total_orders
+        data_type: int64
+        description: The total number of orders the customer has placed across all time.
+
+      - name: total_gross_sales
+        data_type: numeric
+        description: The total amount of money the customer has spent across all their orders (cumulative customer lifetime spending).
+
+      - name: subscription_acquisition_date
+        data_type: date
+        description: The date when the customer first started a subscription service.
+
+      - name: subscription_acquisition_order
+        data_type: string
+        description: The order ID of the customer's first subscription purchase.
+
+      - name: subscription_acquisition_discount_codes
+        data_type: string
+        description: Any discount codes used when the customer first started a subscription.
+
+      - name: subscription_acquisition_product_category
+        data_type: string
+        description: The main product category of the customer's first subscription purchase.
+
+      - name: subscription_acquisition_product_sub_category
+        data_type: string
+        description: The specific product subcategory of the customer's first subscription purchase.
+
+      - name: subscription_acquisition_product_name
+        data_type: string
+        description: The name of the main product in the customer's first subscription order.
+
+      - name: subscription_acquisition_product_basket
+        data_type: string
+        description: A list of all products in the customer's first subscription order.
+
+      - name: subscription_acquisition_category_basket
+        data_type: string
+        description: A list of all product categories in the customer's first subscription order.
+
+      - name: subscription_acquisition_order_channel
+        data_type: string
+        description: The sales channel used for the customer's first subscription purchase.
+
+      - name: total_subscription_orders
+        data_type: int64
+        description: The total number of subscription orders the customer has placed.
+
+      - name: total_subscription_gross_sales
+        data_type: numeric
+        description: The total amount spent specifically on subscription orders (subset of total_gross_sales).
+
+      - name: effective_start_date
+        data_type: date
+        description: The date when this customer record became active in the system.
+
+      - name: effective_end_date
+        data_type: date
+        description: The date when this customer record became inactive (null if still active).
+
+      - name: _last_updated
+        data_type: timestamp
+        description: The timestamp when this customer record was last updated in the system.
+
+      - name: _run_id
+        data_type: string
+        description: Internal system identifier for the data processing run that created or updated this record.

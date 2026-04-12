@@ -1,0 +1,8 @@
+myenv/
+.venv
+*.env
+.env
+web-ui/.env*
+outlook_auth.json
+__pycache__/
+*.pyc
