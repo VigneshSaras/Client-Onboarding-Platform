@@ -36,7 +36,7 @@ class EnvConfig:
     SUPER_ADMIN_PASSWORD: str = ""
     PORTAL_LOGIN_URL: str = ""                   # IQ portal login page
     OUTLOOK_EMAIL: str = "demo@sarasanalytics.com"
-    OUTLOOK_PASSWORD: str = os.getenv("OUTLOOK_PASSWORD", "")
+    OUTLOOK_PASSWORD: str = os.getenv("OUTLOOK_PASSWORD")
     DEFAULT_PASSWORD: str = "Test@1234"
     DEFAULT_PRODUCT_TYPE: str = "IQ"
 
@@ -75,38 +75,38 @@ ENVIRONMENTS = {
     "dev": EnvConfig(
         env_name="dev",
         USER_SERVICE_URL="https://dev-user-service.sarasanalytics.com/v1/api",
-        FIREBASE_API_KEY=os.getenv("DEV_FIREBASE_API_KEY", ""),
+        FIREBASE_API_KEY=os.getenv("DEV_FIREBASE_API_KEY"),
         FIREBASE_PROJECT_ID="dev-daton-37754",
         IQ_API_URL="https://deviqapi.sarasanalytics.com",
         GCS_BUCKET="iq-dev-test",
         GCS_BASE_PATH="dev",
         PORTAL_LOGIN_URL="https://deviq.sarasanalytics.com",
         SUPER_ADMIN_EMAIL="bheem+dev@sarasanalytics.com",
-        SUPER_ADMIN_PASSWORD=os.getenv("DEV_SUPER_ADMIN_PASSWORD", ""),
+        SUPER_ADMIN_PASSWORD=os.getenv("DEV_SUPER_ADMIN_PASSWORD"),
     ),
     "test": EnvConfig(
         env_name="test",
         USER_SERVICE_URL="https://test-user-service.sarasanalytics.com/v1/api",
-        FIREBASE_API_KEY=os.getenv("TEST_FIREBASE_API_KEY", ""),
+        FIREBASE_API_KEY=os.getenv("TEST_FIREBASE_API_KEY"),
         IQ_API_URL="https://testiqapi.sarasanalytics.com",
         GCS_BUCKET="iq-dev-test",
         GCS_BASE_PATH="qa",
         PORTAL_LOGIN_URL="https://testiq.sarasanalytics.com",
         SUPER_ADMIN_EMAIL="rajavardhan@sarasanalytics.com",
-        SUPER_ADMIN_PASSWORD=os.getenv("TEST_SUPER_ADMIN_PASSWORD", ""),
+        SUPER_ADMIN_PASSWORD=os.getenv("TEST_SUPER_ADMIN_PASSWORD"),
         DEFAULT_PRODUCT_TYPE="SARAS",
         REQUIRES_MANUAL_TOKEN=False,
     ),
     "prod": EnvConfig(
         env_name="prod",
         USER_SERVICE_URL="https://user-service.sarasanalytics.com/v1/api",
-        FIREBASE_API_KEY=os.getenv("PROD_FIREBASE_API_KEY", ""),
+        FIREBASE_API_KEY=os.getenv("PROD_FIREBASE_API_KEY"),
         IQ_API_URL="https://iqapi.sarasanalytics.com",
         GCS_BUCKET="iq-prod",
         GCS_BASE_PATH="prod",
         PORTAL_LOGIN_URL="https://accounts.sarasanalytics.com/login?productType=iq",
         SUPER_ADMIN_EMAIL="abhishek.diwan@sarasanalytics.com",
-        SUPER_ADMIN_PASSWORD=os.getenv("PROD_SUPER_ADMIN_PASSWORD", ""),
+        SUPER_ADMIN_PASSWORD=os.getenv("PROD_SUPER_ADMIN_PASSWORD"),
         DEFAULT_PRODUCT_TYPE="SARAS",
         REQUIRES_MANUAL_TOKEN=False,
     ),
