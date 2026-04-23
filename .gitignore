@@ -6,3 +6,5 @@ web-ui/.env*
 outlook_auth.json
 __pycache__/
 *.pyc
+.env.example
+*.env.example
